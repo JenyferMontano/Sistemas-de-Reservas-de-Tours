@@ -128,7 +128,7 @@ func (h *Handler) UpdateTour(ctx *gin.Context) {
 	})
 }
 
-// Eliminar tours
+// Eliminar tours...
 type deleteTourRequest struct {
 	Idtour int32 `uri:"id" binding:"required,min=1"`
 }
@@ -166,6 +166,8 @@ func (h *Handler) GetAllTours(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, tours)
 }
+
+//RECORDAR HACER LA FUNCION PARA BUSCAR POR TIPO DE TOUR
 
 // Function reutiizable
 func errorResponse(err error) gin.H {
