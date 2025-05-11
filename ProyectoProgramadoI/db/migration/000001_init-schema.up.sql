@@ -48,10 +48,10 @@ ENGINE = InnoDB;
 -- Table `reservas`.`Usuario`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `reservas`.`Usuario` (
-  `userName` INT NOT NULL,
+  `userName` VARCHAR(15) NOT NULL,
   `password` VARCHAR(30) NOT NULL,
-  `rol` INT NOT NULL,
-  `idPersona` INT NULL,
+  `rol` VARCHAR(20) NOT NULL,
+  `idPersona` INT NOT NULL,
   PRIMARY KEY (`userName`),
   INDEX `fk_Usuario_Persona1_idx` (`idPersona` ASC),
   CONSTRAINT `fk_Usuario_Persona1`
@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `reservas`.`Reserva` (
   `horaReserva` TIME NOT NULL,
   `cantidadPersonas` INT NOT NULL,
   `tour` INT NOT NULL,
-  `usuario` INT NOT NULL,
+  `usuario` VARCHAR(15) NOT NULL,
   `persona` INT NOT NULL,
   `transfer` INT NOT NULL,
   PRIMARY KEY (`numReserva`),

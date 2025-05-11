@@ -4,6 +4,9 @@ SELECT * FROM reservas.Tour;
 -- name: GetTourById :one
 SELECT * FROM reservas.Tour WHERE idTour = ? LIMIT 1;
 
+-- name: GetToursByTipo :many
+SELECT * FROM reservas.Tour WHERE tipo = ?;
+
 -- name: CreateTour :execresult
 INSERT INTO reservas.Tour (idTour, nombre, descripcion, tipo, disponibilidad, precioBase, ubicacion)
 VALUES (?, ?, ?, ?, ?, ?, ?);

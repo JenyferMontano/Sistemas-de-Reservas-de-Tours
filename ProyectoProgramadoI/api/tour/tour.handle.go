@@ -80,6 +80,27 @@ func (h *Handler) GetTourById(ptx *gin.Context) {
 	ptx.JSON(http.StatusOK, persona)
 }
 
+// Buscar por tipo de tour, utilizar comboBox sino cambiar la funcion.
+type getToursByTipoRequest struct {
+	Tipo string `uri:"tipo" binding:"required"`
+}
+
+func (h *Handler) GetToursByTipo(ctx *gin.Context) {
+	var req getToursByTipoRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	tours, err := h.dbtx.GetToursByTipo(ctx, req.Tipo)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, tours)
+}
+
 // Actualizar tours
 type updateTourRequest struct {
 	Nombre         string `json:"nombre" binding:"required"`

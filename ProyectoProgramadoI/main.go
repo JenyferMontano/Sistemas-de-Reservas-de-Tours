@@ -21,7 +21,10 @@ func main() {
 		log.Fatal("No se puede establecer la conexión", err)
 	}
 	dbtx := dto.NewDbTransaction(conn)
-	server := api.NewServer(dbtx)
+	server, err := api.NewServer(dbtx)
+	if err != nil {
+		log.Fatal("No se puede iniciar el servidor", err)
+	}
 	err = server.Start(serverURL)
 	if err != nil {
 		log.Fatal("No se puede iniciar el servidor", err)

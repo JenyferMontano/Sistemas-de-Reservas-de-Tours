@@ -100,6 +100,41 @@ func (q *Queries) GetTourById(ctx context.Context, idtour int32) (ReservasTour, 
 	return i, err
 }
 
+const getToursByTipo = `-- name: GetToursByTipo :many
+SELECT idtour, nombre, descripcion, tipo, disponibilidad, preciobase, ubicacion FROM reservas.Tour WHERE tipo = ?
+`
+
+func (q *Queries) GetToursByTipo(ctx context.Context, tipo string) ([]ReservasTour, error) {
+	rows, err := q.query(ctx, q.getToursByTipoStmt, getToursByTipo, tipo)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ReservasTour
+	for rows.Next() {
+		var i ReservasTour
+		if err := rows.Scan(
+			&i.Idtour,
+			&i.Nombre,
+			&i.Descripcion,
+			&i.Tipo,
+			&i.Disponibilidad,
+			&i.Preciobase,
+			&i.Ubicacion,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateTour = `-- name: UpdateTour :exec
 UPDATE reservas.Tour
 SET nombre = ?, descripcion = ?, tipo = ?, disponibilidad = ?, precioBase = ?, ubicacion = ?

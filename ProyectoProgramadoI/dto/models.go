@@ -5,7 +5,6 @@
 package dto
 
 import (
-	"database/sql"
 	"time"
 )
 
@@ -36,7 +35,7 @@ type ReservasReserva struct {
 	Horareserva      time.Time `json:"horareserva"`
 	Cantidadpersonas int32     `json:"cantidadpersonas"`
 	Tour             int32     `json:"tour"`
-	Usuario          int32     `json:"usuario"`
+	Usuario          string    `json:"usuario"`
 	Persona          int32     `json:"persona"`
 	Transfer         int32     `json:"transfer"`
 }
@@ -58,8 +57,8 @@ type ReservasTransfer struct {
 }
 
 type ReservasUsuario struct {
-	Username  int32         `json:"username"`
-	Password  string        `json:"password"`
-	Rol       int32         `json:"rol"`
-	Idpersona sql.NullInt32 `json:"idpersona"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	Rol       string `json:"rol"`
+	Idpersona int32  `json:"idpersona"`
 }
