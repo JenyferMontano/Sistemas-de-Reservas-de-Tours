@@ -3,6 +3,7 @@ package api
 import (
 	"ProyectoProgramadoI/api/persona"
 	"ProyectoProgramadoI/api/tour"
+	"ProyectoProgramadoI/api/transfer"
 	"ProyectoProgramadoI/api/usuario"
 	"ProyectoProgramadoI/dto"
 	"ProyectoProgramadoI/security"
@@ -32,6 +33,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	persona.RegisterRoutes(api.Group("/persona"), dbtx)
 	tour.RegisterRoutes(api.Group("/tour"), dbtx)
 	usuario.RegisterRoutes(api.Group("/usuario"), dbtx)
+	transfer.RegisterRoutes(api.Group("/transfer"), dbtx)
 	//router.POST("api/v1/category", server.createCategory)
 	//router.GET("api/v1/category/:id", server.getCategory)
 
@@ -39,7 +41,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 
 	///FIN RUTAS///
 	server.router = router
-	return server,nil
+	return server, nil
 }
 
 func (server *Server) Start(url string) error {
