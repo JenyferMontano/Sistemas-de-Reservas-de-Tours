@@ -21,6 +21,5 @@ func RegisterRoutes(rg *gin.RouterGroup, dbtx *dto.DbTransaction, builder securi
 	adminGroup.GET("/:username", h.GetUsuarioByUsername)
 	adminGroup.DELETE("/:username", h.DeleteUsuario)
 
-	//Cualquier usuario autenticado puede ser admin o cliente
 	rg.PUT("/:username", middleware.AuthMiddleware(builder), h.UpdateUsuario)
 }

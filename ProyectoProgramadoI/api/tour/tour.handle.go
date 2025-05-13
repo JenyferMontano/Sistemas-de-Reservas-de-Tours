@@ -12,7 +12,6 @@ type Handler struct {
 	dbtx *dto.DbTransaction
 }
 
-// Constructor del handler
 func NewHandler(dbtx *dto.DbTransaction) *Handler {
 	return &Handler{dbtx: dbtx}
 }
@@ -49,8 +48,6 @@ func (h *Handler) CreateTour(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-
-	//ctx.JSON(http.StatusOK, tour) ESTO SI NO QUIERO EL MJS DE EXITO EVALUAR
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Tour creado exitosamente",
 		"tour":    tour,
@@ -188,9 +185,6 @@ func (h *Handler) GetAllTours(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, tours)
 }
 
-//RECORDAR HACER LA FUNCION PARA BUSCAR POR TIPO DE TOUR
-
-// Function reutiizable
 func errorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
 }

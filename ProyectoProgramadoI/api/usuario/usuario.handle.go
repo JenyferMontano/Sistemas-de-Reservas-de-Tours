@@ -51,7 +51,7 @@ func (h *Handler) CreateUsuario(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Usuario creado exitosamente",
-		"result":  result, // podría ser affectedRows o info del insert
+		"result":  result, 
 	})
 }
 
@@ -152,6 +152,7 @@ func (h *Handler) GetAllUsuarios(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, usuarios)
 }
 
+// Login de usuario
 type loginRequest struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
@@ -160,8 +161,6 @@ type loginResponse struct {
 	AccessToken string       `json:"access_token"`
 	User        userResponse `json:"user"`
 }
-
-// Estructura para la respuesta de usuario
 type userResponse struct {
 	UserName string `json:"username"`
 	Role     string `json:"role"`
@@ -173,8 +172,6 @@ func (h *Handler) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-
-	// Buscar usuario por email
 	user, err := h.dbtx.GetUsuarioByCorreo(ctx, req.Email)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -185,28 +182,15 @@ func (h *Handler) Login(ctx *gin.Context) {
 		return
 	}
 
-	// Comparar contraseñas usando bcrypt
-	/*
-		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Correo o contraseña incorrectos"})
-			return
-		}
-	*/
-
 	if user.Password != req.Password {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autorizado"})
 		return
 	}
-
-	//HAY QUE INVESTIGAR SOBRE EL .ENV PARA EL TIEMPO DE EXPIRACION DEL TOKEN
-	//ACUALMENTE SE UTILIZA EL TIME.TIME PARA EL TIEMPO DE EXPIRACION
 	accessToken, err := h.tokenBuilder.CreateToken(user.Username, req.Email, user.Rol, h.tokenDuration)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-
-	// Preparar respuesta
 	resp := loginResponse{
 		AccessToken: accessToken,
 		User: userResponse{
@@ -218,7 +202,6 @@ func (h *Handler) Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// Function reutiizable
 func errorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
 }

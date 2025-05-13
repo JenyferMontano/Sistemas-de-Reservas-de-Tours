@@ -22,7 +22,6 @@ type Server struct {
 }
 
 func NewServer(dbtx *dto.DbTransaction, tokenDuration time.Duration) (*Server, error) {
-	//server := &Server{dbtx: dbtx}
 	tokenBuilder, err := security.NewPasetoBuilder("12345678123456781234567812345678")
 	if err != nil {
 		return nil, err
@@ -52,10 +51,4 @@ func NewServer(dbtx *dto.DbTransaction, tokenDuration time.Duration) (*Server, e
 
 func (server *Server) Start(url string) error {
 	return server.router.Run(url)
-}
-
-func errorResponse(err error) gin.H {
-	return gin.H{
-		"error": err.Error(),
-	}
 }

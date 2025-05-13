@@ -14,7 +14,6 @@ type Handler struct {
 	dbtx *dto.DbTransaction
 }
 
-// Constructor del handler
 func NewHandler(dbtx *dto.DbTransaction) *Handler {
 	return &Handler{dbtx: dbtx}
 }
@@ -142,7 +141,6 @@ func (h *Handler) UpdatePersona(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
-// Function reutiizable
 func errorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
 }

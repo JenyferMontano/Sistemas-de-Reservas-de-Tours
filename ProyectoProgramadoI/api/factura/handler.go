@@ -13,13 +13,11 @@ type Handler struct {
 	dbtx *dto.DbTransaction
 }
 
-// Constructor del handler
 func NewHandler(dbtx *dto.DbTransaction) *Handler {
 	return &Handler{dbtx: dbtx}
 }
 
 //Crear factura
-
 type createFacturaRequest struct {
 	Idfactura  int32  `json:"idfactura"`
 	Fechafact  string `json:"fechafact"`
@@ -112,7 +110,6 @@ func (h *Handler) DeleteFactura(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Factura eliminada correctamente"})
 }
 
-// Function reutiizable
 func errorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
 }

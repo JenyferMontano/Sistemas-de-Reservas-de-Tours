@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Función pública para que sea accesible desde otros paquetes
 func AuthMiddleware(tokenBilder security.Builder) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authHeader := ctx.GetHeader("authorization")
@@ -40,33 +39,26 @@ func AuthMiddleware(tokenBilder security.Builder) gin.HandlerFunc {
 	}
 }
 
-// Verifica el rol del usuario para garantizar el acceso solo a usuarios con el rol correcto
+// Verifica el rol del usuario
 func RequireRole(requiredRole string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		// Obtener el payload del contexto
 		authorized, exists := ctx.Get("authorized")
 		if !exists {
 			err := errors.New("usuario no autenticado")
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
 			return
 		}
-
-		// Convertir el payload al tipo adecuado (en este caso, Payload)
 		payload, ok := authorized.(*security.Payload)
 		if !ok {
 			err := errors.New("información del usuario no válida")
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
 			return
 		}
-
-		// Verificar el rol del usuario
 		if payload.Rol != requiredRole {
 			err := errors.New("acceso denegado: rol insuficiente")
 			ctx.AbortWithStatusJSON(http.StatusForbidden, errorResponse(err))
 			return
 		}
-
-		// Si el rol es el correcto, permitir la ejecución de la ruta
 		ctx.Next()
 	}
 }
