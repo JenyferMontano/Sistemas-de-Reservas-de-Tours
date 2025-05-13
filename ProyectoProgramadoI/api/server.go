@@ -6,40 +6,42 @@ import (
 	"ProyectoProgramadoI/api/usuario"
 	"ProyectoProgramadoI/dto"
 	"ProyectoProgramadoI/security"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Server struct {
-	dbtx         *dto.DbTransaction
-	tokenBuilder security.Builder
-	router       *gin.Engine
+	dbtx          *dto.DbTransaction
+	tokenBuilder  security.Builder
+	tokenDuration time.Duration
+	router        *gin.Engine
 }
 
-func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
+func NewServer(dbtx *dto.DbTransaction, tokenDuration time.Duration) (*Server, error) {
 	//server := &Server{dbtx: dbtx}
 	tokenBuilder, err := security.NewPasetoBuilder("12345678123456781234567812345678")
 	if err != nil {
 		return nil, err
 	}
 	server := &Server{
-		dbtx:         dbtx,
-		tokenBuilder: tokenBuilder,
+		dbtx:          dbtx,
+		tokenBuilder:  tokenBuilder,
+		tokenDuration: tokenDuration,
 	}
 	router := gin.Default()
+	usuarioHandler := usuario.NewHandler(dbtx, tokenBuilder, tokenDuration)
+
 	//RUTAS {ENDPOINTS} DEL API
 	api := router.Group("/api/v1")
-	persona.RegisterRoutes(api.Group("/persona"), dbtx)
-	tour.RegisterRoutes(api.Group("/tour"), dbtx)
-	usuario.RegisterRoutes(api.Group("/usuario"), dbtx)
-	//router.POST("api/v1/category", server.createCategory)
-	//router.GET("api/v1/category/:id", server.getCategory)
-
-	//RUTAS CON MIDDLEWARE
+	api.POST("/login", usuarioHandler.Login)
+	persona.RegisterRoutes(api.Group("/persona"), dbtx, tokenBuilder)
+	tour.RegisterRoutes(api.Group("/tour"), dbtx, tokenBuilder)
+	usuario.RegisterRoutes(api.Group("/usuario"), dbtx, tokenBuilder, tokenDuration)
 
 	///FIN RUTAS///
 	server.router = router
-	return server,nil
+	return server, nil
 }
 
 func (server *Server) Start(url string) error {

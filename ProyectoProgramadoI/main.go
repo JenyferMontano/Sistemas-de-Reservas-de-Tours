@@ -5,8 +5,11 @@ import (
 	"ProyectoProgramadoI/dto"
 	"database/sql"
 	"log"
+	"os"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -16,12 +19,24 @@ const (
 )
 
 func main() {
+
+	err := godotenv.Load("app.env")
+	if err != nil {
+		log.Fatal("No se pudo cargar el archivo .env")
+	}
+
+	tokenDurationStr := os.Getenv("TOKEN_DURATION")
+	tokenDuration, err := time.ParseDuration(tokenDurationStr)
+	if err != nil {
+		log.Fatal("Duración del token inválida:", err)
+	}
+
 	conn, err := sql.Open(dbDriver, dbSource)
 	if err != nil {
 		log.Fatal("No se puede establecer la conexión", err)
 	}
 	dbtx := dto.NewDbTransaction(conn)
-	server, err := api.NewServer(dbtx)
+	server, err := api.NewServer(dbtx, tokenDuration)
 	if err != nil {
 		log.Fatal("No se puede iniciar el servidor", err)
 	}

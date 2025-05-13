@@ -27,8 +27,8 @@ func NewPasetoBuilder(symmetricKey string) (Builder, error) {
 }
 
 // CreateToken genera un token con username y email, válido por una duración específica
-func (builder *PasetoBuilder) CreateToken(username string, email string, duration time.Duration) (string, error) {
-	payload, err := NewPayload(username, email, duration)
+func (builder *PasetoBuilder) CreateToken(username string, email string, rol string, duration time.Duration) (string, error) {
+	payload, err := NewPayload(username, email, rol, duration)
 	if err != nil {
 		return "", err
 	}

@@ -2,18 +2,24 @@ package usuario
 
 import (
 	"ProyectoProgramadoI/dto"
+	"ProyectoProgramadoI/security"
 	"database/sql"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type Handler struct {
-	dbtx *dto.DbTransaction
+	dbtx          *dto.DbTransaction
+	tokenBuilder  security.Builder
+	tokenDuration time.Duration
 }
 
-func NewHandler(dbtx *dto.DbTransaction) *Handler {
-	return &Handler{dbtx: dbtx}
+func NewHandler(dbtx *dto.DbTransaction, tokenBuilder security.Builder, tokenDuration time.Duration) *Handler {
+	return &Handler{dbtx: dbtx,
+		tokenBuilder:  tokenBuilder,
+		tokenDuration: tokenDuration}
 }
 
 type createUsuarioRequest struct {
@@ -144,6 +150,72 @@ func (h *Handler) GetAllUsuarios(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, usuarios)
+}
+
+type loginRequest struct {
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+type loginResponse struct {
+	AccessToken string       `json:"access_token"`
+	User        userResponse `json:"user"`
+}
+
+// Estructura para la respuesta de usuario
+type userResponse struct {
+	UserName string `json:"username"`
+	Role     string `json:"role"`
+}
+
+func (h *Handler) Login(ctx *gin.Context) {
+	var req loginRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	// Buscar usuario por email
+	user, err := h.dbtx.GetUsuarioByCorreo(ctx, req.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Correo o contraseña incorrectos"})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	// Comparar contraseñas usando bcrypt
+	/*
+		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Correo o contraseña incorrectos"})
+			return
+		}
+	*/
+
+	if user.Password != req.Password {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no autorizado"})
+		return
+	}
+
+	//HAY QUE INVESTIGAR SOBRE EL .ENV PARA EL TIEMPO DE EXPIRACION DEL TOKEN
+	//ACUALMENTE SE UTILIZA EL TIME.TIME PARA EL TIEMPO DE EXPIRACION
+	accessToken, err := h.tokenBuilder.CreateToken(user.Username, req.Email, user.Rol, h.tokenDuration)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	// Preparar respuesta
+	resp := loginResponse{
+		AccessToken: accessToken,
+		User: userResponse{
+			UserName: user.Username,
+			Role:     user.Rol,
+		},
+	}
+
+	ctx.JSON(http.StatusOK, resp)
 }
 
 // Function reutiizable
