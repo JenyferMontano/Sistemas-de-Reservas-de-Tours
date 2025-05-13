@@ -3,6 +3,7 @@ package api
 import (
 	"ProyectoProgramadoI/api/persona"
 	"ProyectoProgramadoI/api/tour"
+	"ProyectoProgramadoI/api/transfer"
 	"ProyectoProgramadoI/api/usuario"
 	"ProyectoProgramadoI/dto"
 	"ProyectoProgramadoI/security"
