@@ -9,14 +9,14 @@ import (
 )
 
 type ReservasFactura struct {
-	Idfactura  int32     `json:"idfactura"`
-	Fechafact  time.Time `json:"fechafact"`
-	Metodopago string    `json:"metodopago"`
-	Iva        string    `json:"iva"`
-	Descuento  string    `json:"descuento"`
-	Subtotal   string    `json:"subtotal"`
-	Total      string    `json:"total"`
-	Reserva    int32     `json:"reserva"`
+	Idfactura  int32  `json:"idfactura"`
+	Fechafact  string `json:"fechafact"`
+	Metodopago string `json:"metodopago"`
+	Iva        string `json:"iva"`
+	Descuento  string `json:"descuento"`
+	Subtotal   string `json:"subtotal"`
+	Total      string `json:"total"`
+	Reserva    int32  `json:"reserva"`
 }
 
 type ReservasPersona struct {
@@ -30,14 +30,14 @@ type ReservasPersona struct {
 }
 
 type ReservasReserva struct {
-	Numreserva       int32     `json:"numreserva"`
-	Fechareserva     time.Time `json:"fechareserva"`
-	Horareserva      time.Time `json:"horareserva"`
-	Cantidadpersonas int32     `json:"cantidadpersonas"`
-	Tour             int32     `json:"tour"`
-	Usuario          string    `json:"usuario"`
-	Persona          int32     `json:"persona"`
-	Transfer         int32     `json:"transfer"`
+	Numreserva       int32  `json:"numreserva"`
+	Fechareserva     string `json:"fechareserva"`
+	Horareserva      string `json:"horareserva"`
+	Cantidadpersonas int32  `json:"cantidadpersonas"`
+	Tour             int32  `json:"tour"`
+	Usuario          string `json:"usuario"`
+	Persona          int32  `json:"persona"`
+	Transfer         int32  `json:"transfer"`
 }
 
 type ReservasTour struct {

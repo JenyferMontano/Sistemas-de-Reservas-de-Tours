@@ -24,8 +24,14 @@ func New(db DBTX) *Queries {
 func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	q := Queries{db: db}
 	var err error
+	if q.createFacturaStmt, err = db.PrepareContext(ctx, createFactura); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateFactura: %w", err)
+	}
 	if q.createPersonaStmt, err = db.PrepareContext(ctx, createPersona); err != nil {
 		return nil, fmt.Errorf("error preparing query CreatePersona: %w", err)
+	}
+	if q.createReservaStmt, err = db.PrepareContext(ctx, createReserva); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateReserva: %w", err)
 	}
 	if q.createTourStmt, err = db.PrepareContext(ctx, createTour); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateTour: %w", err)
@@ -36,8 +42,14 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createUsuarioStmt, err = db.PrepareContext(ctx, createUsuario); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUsuario: %w", err)
 	}
+	if q.deleteFacturaStmt, err = db.PrepareContext(ctx, deleteFactura); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteFactura: %w", err)
+	}
 	if q.deletePersonaStmt, err = db.PrepareContext(ctx, deletePersona); err != nil {
 		return nil, fmt.Errorf("error preparing query DeletePersona: %w", err)
+	}
+	if q.deleteReservaStmt, err = db.PrepareContext(ctx, deleteReserva); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteReserva: %w", err)
 	}
 	if q.deleteTourStmt, err = db.PrepareContext(ctx, deleteTour); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteTour: %w", err)
@@ -48,8 +60,14 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.deleteUsuarioStmt, err = db.PrepareContext(ctx, deleteUsuario); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteUsuario: %w", err)
 	}
+	if q.getAllFacturasStmt, err = db.PrepareContext(ctx, getAllFacturas); err != nil {
+		return nil, fmt.Errorf("error preparing query GetAllFacturas: %w", err)
+	}
 	if q.getAllPersonasStmt, err = db.PrepareContext(ctx, getAllPersonas); err != nil {
 		return nil, fmt.Errorf("error preparing query GetAllPersonas: %w", err)
+	}
+	if q.getAllReservasStmt, err = db.PrepareContext(ctx, getAllReservas); err != nil {
+		return nil, fmt.Errorf("error preparing query GetAllReservas: %w", err)
 	}
 	if q.getAllToursStmt, err = db.PrepareContext(ctx, getAllTours); err != nil {
 		return nil, fmt.Errorf("error preparing query GetAllTours: %w", err)
@@ -63,8 +81,17 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getCorreoByUserNameStmt, err = db.PrepareContext(ctx, getCorreoByUserName); err != nil {
 		return nil, fmt.Errorf("error preparing query GetCorreoByUserName: %w", err)
 	}
+	if q.getFacturaByIdStmt, err = db.PrepareContext(ctx, getFacturaById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetFacturaById: %w", err)
+	}
+	if q.getFacturaByReservaIdStmt, err = db.PrepareContext(ctx, getFacturaByReservaId); err != nil {
+		return nil, fmt.Errorf("error preparing query GetFacturaByReservaId: %w", err)
+	}
 	if q.getPersonaByIdStmt, err = db.PrepareContext(ctx, getPersonaById); err != nil {
 		return nil, fmt.Errorf("error preparing query GetPersonaById: %w", err)
+	}
+	if q.getReservaByIdStmt, err = db.PrepareContext(ctx, getReservaById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetReservaById: %w", err)
 	}
 	if q.getTourByIdStmt, err = db.PrepareContext(ctx, getTourById); err != nil {
 		return nil, fmt.Errorf("error preparing query GetTourById: %w", err)
@@ -81,8 +108,14 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getUsuarioByUserNameStmt, err = db.PrepareContext(ctx, getUsuarioByUserName); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUsuarioByUserName: %w", err)
 	}
+	if q.updateFacturaStmt, err = db.PrepareContext(ctx, updateFactura); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateFactura: %w", err)
+	}
 	if q.updatePersonaStmt, err = db.PrepareContext(ctx, updatePersona); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdatePersona: %w", err)
+	}
+	if q.updateReservaStmt, err = db.PrepareContext(ctx, updateReserva); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateReserva: %w", err)
 	}
 	if q.updateTourStmt, err = db.PrepareContext(ctx, updateTour); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateTour: %w", err)
@@ -101,9 +134,19 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 
 func (q *Queries) Close() error {
 	var err error
+	if q.createFacturaStmt != nil {
+		if cerr := q.createFacturaStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createFacturaStmt: %w", cerr)
+		}
+	}
 	if q.createPersonaStmt != nil {
 		if cerr := q.createPersonaStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createPersonaStmt: %w", cerr)
+		}
+	}
+	if q.createReservaStmt != nil {
+		if cerr := q.createReservaStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createReservaStmt: %w", cerr)
 		}
 	}
 	if q.createTourStmt != nil {
@@ -121,9 +164,19 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createUsuarioStmt: %w", cerr)
 		}
 	}
+	if q.deleteFacturaStmt != nil {
+		if cerr := q.deleteFacturaStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteFacturaStmt: %w", cerr)
+		}
+	}
 	if q.deletePersonaStmt != nil {
 		if cerr := q.deletePersonaStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deletePersonaStmt: %w", cerr)
+		}
+	}
+	if q.deleteReservaStmt != nil {
+		if cerr := q.deleteReservaStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteReservaStmt: %w", cerr)
 		}
 	}
 	if q.deleteTourStmt != nil {
@@ -141,9 +194,19 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing deleteUsuarioStmt: %w", cerr)
 		}
 	}
+	if q.getAllFacturasStmt != nil {
+		if cerr := q.getAllFacturasStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getAllFacturasStmt: %w", cerr)
+		}
+	}
 	if q.getAllPersonasStmt != nil {
 		if cerr := q.getAllPersonasStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getAllPersonasStmt: %w", cerr)
+		}
+	}
+	if q.getAllReservasStmt != nil {
+		if cerr := q.getAllReservasStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getAllReservasStmt: %w", cerr)
 		}
 	}
 	if q.getAllToursStmt != nil {
@@ -166,9 +229,24 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getCorreoByUserNameStmt: %w", cerr)
 		}
 	}
+	if q.getFacturaByIdStmt != nil {
+		if cerr := q.getFacturaByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getFacturaByIdStmt: %w", cerr)
+		}
+	}
+	if q.getFacturaByReservaIdStmt != nil {
+		if cerr := q.getFacturaByReservaIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getFacturaByReservaIdStmt: %w", cerr)
+		}
+	}
 	if q.getPersonaByIdStmt != nil {
 		if cerr := q.getPersonaByIdStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getPersonaByIdStmt: %w", cerr)
+		}
+	}
+	if q.getReservaByIdStmt != nil {
+		if cerr := q.getReservaByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getReservaByIdStmt: %w", cerr)
 		}
 	}
 	if q.getTourByIdStmt != nil {
@@ -196,9 +274,19 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getUsuarioByUserNameStmt: %w", cerr)
 		}
 	}
+	if q.updateFacturaStmt != nil {
+		if cerr := q.updateFacturaStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateFacturaStmt: %w", cerr)
+		}
+	}
 	if q.updatePersonaStmt != nil {
 		if cerr := q.updatePersonaStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updatePersonaStmt: %w", cerr)
+		}
+	}
+	if q.updateReservaStmt != nil {
+		if cerr := q.updateReservaStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateReservaStmt: %w", cerr)
 		}
 	}
 	if q.updateTourStmt != nil {
@@ -258,61 +346,83 @@ func (q *Queries) queryRow(ctx context.Context, stmt *sql.Stmt, query string, ar
 }
 
 type Queries struct {
-	db                       DBTX
-	tx                       *sql.Tx
-	createPersonaStmt        *sql.Stmt
-	createTourStmt           *sql.Stmt
-	createTransferStmt       *sql.Stmt
-	createUsuarioStmt        *sql.Stmt
-	deletePersonaStmt        *sql.Stmt
-	deleteTourStmt           *sql.Stmt
-	deleteTransferStmt       *sql.Stmt
-	deleteUsuarioStmt        *sql.Stmt
-	getAllPersonasStmt       *sql.Stmt
-	getAllToursStmt          *sql.Stmt
-	getAllTransfersStmt      *sql.Stmt
-	getAllUsuariosStmt       *sql.Stmt
-	getCorreoByUserNameStmt  *sql.Stmt
-	getPersonaByIdStmt       *sql.Stmt
-	getTourByIdStmt          *sql.Stmt
-	getToursByTipoStmt       *sql.Stmt
-	getTransferByIdStmt      *sql.Stmt
-	getUsuarioByCorreoStmt   *sql.Stmt
-	getUsuarioByUserNameStmt *sql.Stmt
-	updatePersonaStmt        *sql.Stmt
-	updateTourStmt           *sql.Stmt
-	updateTransferStmt       *sql.Stmt
-	updateUsuarioStmt        *sql.Stmt
-	usuarioExisteStmt        *sql.Stmt
+	db                        DBTX
+	tx                        *sql.Tx
+	createFacturaStmt         *sql.Stmt
+	createPersonaStmt         *sql.Stmt
+	createReservaStmt         *sql.Stmt
+	createTourStmt            *sql.Stmt
+	createTransferStmt        *sql.Stmt
+	createUsuarioStmt         *sql.Stmt
+	deleteFacturaStmt         *sql.Stmt
+	deletePersonaStmt         *sql.Stmt
+	deleteReservaStmt         *sql.Stmt
+	deleteTourStmt            *sql.Stmt
+	deleteTransferStmt        *sql.Stmt
+	deleteUsuarioStmt         *sql.Stmt
+	getAllFacturasStmt        *sql.Stmt
+	getAllPersonasStmt        *sql.Stmt
+	getAllReservasStmt        *sql.Stmt
+	getAllToursStmt           *sql.Stmt
+	getAllTransfersStmt       *sql.Stmt
+	getAllUsuariosStmt        *sql.Stmt
+	getCorreoByUserNameStmt   *sql.Stmt
+	getFacturaByIdStmt        *sql.Stmt
+	getFacturaByReservaIdStmt *sql.Stmt
+	getPersonaByIdStmt        *sql.Stmt
+	getReservaByIdStmt        *sql.Stmt
+	getTourByIdStmt           *sql.Stmt
+	getToursByTipoStmt        *sql.Stmt
+	getTransferByIdStmt       *sql.Stmt
+	getUsuarioByCorreoStmt    *sql.Stmt
+	getUsuarioByUserNameStmt  *sql.Stmt
+	updateFacturaStmt         *sql.Stmt
+	updatePersonaStmt         *sql.Stmt
+	updateReservaStmt         *sql.Stmt
+	updateTourStmt            *sql.Stmt
+	updateTransferStmt        *sql.Stmt
+	updateUsuarioStmt         *sql.Stmt
+	usuarioExisteStmt         *sql.Stmt
 }
 
 func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 	return &Queries{
-		db:                       tx,
-		tx:                       tx,
-		createPersonaStmt:        q.createPersonaStmt,
-		createTourStmt:           q.createTourStmt,
-		createTransferStmt:       q.createTransferStmt,
-		createUsuarioStmt:        q.createUsuarioStmt,
-		deletePersonaStmt:        q.deletePersonaStmt,
-		deleteTourStmt:           q.deleteTourStmt,
-		deleteTransferStmt:       q.deleteTransferStmt,
-		deleteUsuarioStmt:        q.deleteUsuarioStmt,
-		getAllPersonasStmt:       q.getAllPersonasStmt,
-		getAllToursStmt:          q.getAllToursStmt,
-		getAllTransfersStmt:      q.getAllTransfersStmt,
-		getAllUsuariosStmt:       q.getAllUsuariosStmt,
-		getCorreoByUserNameStmt:  q.getCorreoByUserNameStmt,
-		getPersonaByIdStmt:       q.getPersonaByIdStmt,
-		getTourByIdStmt:          q.getTourByIdStmt,
-		getToursByTipoStmt:       q.getToursByTipoStmt,
-		getTransferByIdStmt:      q.getTransferByIdStmt,
-		getUsuarioByCorreoStmt:   q.getUsuarioByCorreoStmt,
-		getUsuarioByUserNameStmt: q.getUsuarioByUserNameStmt,
-		updatePersonaStmt:        q.updatePersonaStmt,
-		updateTourStmt:           q.updateTourStmt,
-		updateTransferStmt:       q.updateTransferStmt,
-		updateUsuarioStmt:        q.updateUsuarioStmt,
-		usuarioExisteStmt:        q.usuarioExisteStmt,
+		db:                        tx,
+		tx:                        tx,
+		createFacturaStmt:         q.createFacturaStmt,
+		createPersonaStmt:         q.createPersonaStmt,
+		createReservaStmt:         q.createReservaStmt,
+		createTourStmt:            q.createTourStmt,
+		createTransferStmt:        q.createTransferStmt,
+		createUsuarioStmt:         q.createUsuarioStmt,
+		deleteFacturaStmt:         q.deleteFacturaStmt,
+		deletePersonaStmt:         q.deletePersonaStmt,
+		deleteReservaStmt:         q.deleteReservaStmt,
+		deleteTourStmt:            q.deleteTourStmt,
+		deleteTransferStmt:        q.deleteTransferStmt,
+		deleteUsuarioStmt:         q.deleteUsuarioStmt,
+		getAllFacturasStmt:        q.getAllFacturasStmt,
+		getAllPersonasStmt:        q.getAllPersonasStmt,
+		getAllReservasStmt:        q.getAllReservasStmt,
+		getAllToursStmt:           q.getAllToursStmt,
+		getAllTransfersStmt:       q.getAllTransfersStmt,
+		getAllUsuariosStmt:        q.getAllUsuariosStmt,
+		getCorreoByUserNameStmt:   q.getCorreoByUserNameStmt,
+		getFacturaByIdStmt:        q.getFacturaByIdStmt,
+		getFacturaByReservaIdStmt: q.getFacturaByReservaIdStmt,
+		getPersonaByIdStmt:        q.getPersonaByIdStmt,
+		getReservaByIdStmt:        q.getReservaByIdStmt,
+		getTourByIdStmt:           q.getTourByIdStmt,
+		getToursByTipoStmt:        q.getToursByTipoStmt,
+		getTransferByIdStmt:       q.getTransferByIdStmt,
+		getUsuarioByCorreoStmt:    q.getUsuarioByCorreoStmt,
+		getUsuarioByUserNameStmt:  q.getUsuarioByUserNameStmt,
+		updateFacturaStmt:         q.updateFacturaStmt,
+		updatePersonaStmt:         q.updatePersonaStmt,
+		updateReservaStmt:         q.updateReservaStmt,
+		updateTourStmt:            q.updateTourStmt,
+		updateTransferStmt:        q.updateTransferStmt,
+		updateUsuarioStmt:         q.updateUsuarioStmt,
+		usuarioExisteStmt:         q.usuarioExisteStmt,
 	}
 }
