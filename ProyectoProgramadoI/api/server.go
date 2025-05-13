@@ -39,6 +39,7 @@ func NewServer(dbtx *dto.DbTransaction, tokenDuration time.Duration) (*Server, e
 	persona.RegisterRoutes(api.Group("/persona"), dbtx, tokenBuilder)
 	tour.RegisterRoutes(api.Group("/tour"), dbtx, tokenBuilder)
 	usuario.RegisterRoutes(api.Group("/usuario"), dbtx, tokenBuilder, tokenDuration)
+	transfer.RegisterRoutes(api.Group("/transfer"), dbtx, tokenBuilder)
 
 	///FIN RUTAS///
 	server.router = router

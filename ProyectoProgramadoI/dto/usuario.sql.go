@@ -154,4 +154,3 @@ func (q *Queries) UsuarioExiste(ctx context.Context, username string) (int64, er
 	err := row.Scan(&count)
 	return count, err
 }
-

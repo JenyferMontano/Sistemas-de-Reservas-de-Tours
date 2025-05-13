@@ -30,6 +30,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.createTourStmt, err = db.PrepareContext(ctx, createTour); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateTour: %w", err)
 	}
+	if q.createTransferStmt, err = db.PrepareContext(ctx, createTransfer); err != nil {
+		return nil, fmt.Errorf("error preparing query CreateTransfer: %w", err)
+	}
 	if q.createUsuarioStmt, err = db.PrepareContext(ctx, createUsuario); err != nil {
 		return nil, fmt.Errorf("error preparing query CreateUsuario: %w", err)
 	}
@@ -39,6 +42,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.deleteTourStmt, err = db.PrepareContext(ctx, deleteTour); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteTour: %w", err)
 	}
+	if q.deleteTransferStmt, err = db.PrepareContext(ctx, deleteTransfer); err != nil {
+		return nil, fmt.Errorf("error preparing query DeleteTransfer: %w", err)
+	}
 	if q.deleteUsuarioStmt, err = db.PrepareContext(ctx, deleteUsuario); err != nil {
 		return nil, fmt.Errorf("error preparing query DeleteUsuario: %w", err)
 	}
@@ -47,6 +53,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.getAllToursStmt, err = db.PrepareContext(ctx, getAllTours); err != nil {
 		return nil, fmt.Errorf("error preparing query GetAllTours: %w", err)
+	}
+	if q.getAllTransfersStmt, err = db.PrepareContext(ctx, getAllTransfers); err != nil {
+		return nil, fmt.Errorf("error preparing query GetAllTransfers: %w", err)
 	}
 	if q.getAllUsuariosStmt, err = db.PrepareContext(ctx, getAllUsuarios); err != nil {
 		return nil, fmt.Errorf("error preparing query GetAllUsuarios: %w", err)
@@ -63,6 +72,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	if q.getToursByTipoStmt, err = db.PrepareContext(ctx, getToursByTipo); err != nil {
 		return nil, fmt.Errorf("error preparing query GetToursByTipo: %w", err)
 	}
+	if q.getTransferByIdStmt, err = db.PrepareContext(ctx, getTransferById); err != nil {
+		return nil, fmt.Errorf("error preparing query GetTransferById: %w", err)
+	}
 	if q.getUsuarioByCorreoStmt, err = db.PrepareContext(ctx, getUsuarioByCorreo); err != nil {
 		return nil, fmt.Errorf("error preparing query GetUsuarioByCorreo: %w", err)
 	}
@@ -74,6 +86,9 @@ func Prepare(ctx context.Context, db DBTX) (*Queries, error) {
 	}
 	if q.updateTourStmt, err = db.PrepareContext(ctx, updateTour); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateTour: %w", err)
+	}
+	if q.updateTransferStmt, err = db.PrepareContext(ctx, updateTransfer); err != nil {
+		return nil, fmt.Errorf("error preparing query UpdateTransfer: %w", err)
 	}
 	if q.updateUsuarioStmt, err = db.PrepareContext(ctx, updateUsuario); err != nil {
 		return nil, fmt.Errorf("error preparing query UpdateUsuario: %w", err)
@@ -96,6 +111,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing createTourStmt: %w", cerr)
 		}
 	}
+	if q.createTransferStmt != nil {
+		if cerr := q.createTransferStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing createTransferStmt: %w", cerr)
+		}
+	}
 	if q.createUsuarioStmt != nil {
 		if cerr := q.createUsuarioStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing createUsuarioStmt: %w", cerr)
@@ -111,6 +131,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing deleteTourStmt: %w", cerr)
 		}
 	}
+	if q.deleteTransferStmt != nil {
+		if cerr := q.deleteTransferStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing deleteTransferStmt: %w", cerr)
+		}
+	}
 	if q.deleteUsuarioStmt != nil {
 		if cerr := q.deleteUsuarioStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing deleteUsuarioStmt: %w", cerr)
@@ -124,6 +149,11 @@ func (q *Queries) Close() error {
 	if q.getAllToursStmt != nil {
 		if cerr := q.getAllToursStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getAllToursStmt: %w", cerr)
+		}
+	}
+	if q.getAllTransfersStmt != nil {
+		if cerr := q.getAllTransfersStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getAllTransfersStmt: %w", cerr)
 		}
 	}
 	if q.getAllUsuariosStmt != nil {
@@ -151,6 +181,11 @@ func (q *Queries) Close() error {
 			err = fmt.Errorf("error closing getToursByTipoStmt: %w", cerr)
 		}
 	}
+	if q.getTransferByIdStmt != nil {
+		if cerr := q.getTransferByIdStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing getTransferByIdStmt: %w", cerr)
+		}
+	}
 	if q.getUsuarioByCorreoStmt != nil {
 		if cerr := q.getUsuarioByCorreoStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing getUsuarioByCorreoStmt: %w", cerr)
@@ -169,6 +204,11 @@ func (q *Queries) Close() error {
 	if q.updateTourStmt != nil {
 		if cerr := q.updateTourStmt.Close(); cerr != nil {
 			err = fmt.Errorf("error closing updateTourStmt: %w", cerr)
+		}
+	}
+	if q.updateTransferStmt != nil {
+		if cerr := q.updateTransferStmt.Close(); cerr != nil {
+			err = fmt.Errorf("error closing updateTransferStmt: %w", cerr)
 		}
 	}
 	if q.updateUsuarioStmt != nil {
@@ -222,21 +262,26 @@ type Queries struct {
 	tx                       *sql.Tx
 	createPersonaStmt        *sql.Stmt
 	createTourStmt           *sql.Stmt
+	createTransferStmt       *sql.Stmt
 	createUsuarioStmt        *sql.Stmt
 	deletePersonaStmt        *sql.Stmt
 	deleteTourStmt           *sql.Stmt
+	deleteTransferStmt       *sql.Stmt
 	deleteUsuarioStmt        *sql.Stmt
 	getAllPersonasStmt       *sql.Stmt
 	getAllToursStmt          *sql.Stmt
+	getAllTransfersStmt      *sql.Stmt
 	getAllUsuariosStmt       *sql.Stmt
 	getCorreoByUserNameStmt  *sql.Stmt
 	getPersonaByIdStmt       *sql.Stmt
 	getTourByIdStmt          *sql.Stmt
 	getToursByTipoStmt       *sql.Stmt
+	getTransferByIdStmt      *sql.Stmt
 	getUsuarioByCorreoStmt   *sql.Stmt
 	getUsuarioByUserNameStmt *sql.Stmt
 	updatePersonaStmt        *sql.Stmt
 	updateTourStmt           *sql.Stmt
+	updateTransferStmt       *sql.Stmt
 	updateUsuarioStmt        *sql.Stmt
 	usuarioExisteStmt        *sql.Stmt
 }
@@ -247,21 +292,26 @@ func (q *Queries) WithTx(tx *sql.Tx) *Queries {
 		tx:                       tx,
 		createPersonaStmt:        q.createPersonaStmt,
 		createTourStmt:           q.createTourStmt,
+		createTransferStmt:       q.createTransferStmt,
 		createUsuarioStmt:        q.createUsuarioStmt,
 		deletePersonaStmt:        q.deletePersonaStmt,
 		deleteTourStmt:           q.deleteTourStmt,
+		deleteTransferStmt:       q.deleteTransferStmt,
 		deleteUsuarioStmt:        q.deleteUsuarioStmt,
 		getAllPersonasStmt:       q.getAllPersonasStmt,
 		getAllToursStmt:          q.getAllToursStmt,
+		getAllTransfersStmt:      q.getAllTransfersStmt,
 		getAllUsuariosStmt:       q.getAllUsuariosStmt,
 		getCorreoByUserNameStmt:  q.getCorreoByUserNameStmt,
 		getPersonaByIdStmt:       q.getPersonaByIdStmt,
 		getTourByIdStmt:          q.getTourByIdStmt,
 		getToursByTipoStmt:       q.getToursByTipoStmt,
+		getTransferByIdStmt:      q.getTransferByIdStmt,
 		getUsuarioByCorreoStmt:   q.getUsuarioByCorreoStmt,
 		getUsuarioByUserNameStmt: q.getUsuarioByUserNameStmt,
 		updatePersonaStmt:        q.updatePersonaStmt,
 		updateTourStmt:           q.updateTourStmt,
+		updateTransferStmt:       q.updateTransferStmt,
 		updateUsuarioStmt:        q.updateUsuarioStmt,
 		usuarioExisteStmt:        q.usuarioExisteStmt,
 	}
