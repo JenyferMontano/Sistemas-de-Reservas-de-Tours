@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	cors "github.com/itsjamie/gin-cors"
 )
 
 type Server struct {
@@ -32,6 +33,16 @@ func NewServer(dbtx *dto.DbTransaction, tokenDuration time.Duration) (*Server, e
 		tokenDuration: tokenDuration,
 	}
 	router := gin.Default()
+	// Middleware CORS
+	router.Use(cors.Middleware(cors.Config{
+		Origins:         "*", 
+		Methods:         "GET, PUT, POST, DELETE, OPTIONS",
+		RequestHeaders:  "Origin, Authorization, Content-Type",
+		ExposedHeaders:  "",
+		MaxAge:          50 * time.Second,
+		Credentials:     false,
+		ValidateHeaders: false,
+	}))
 	usuarioHandler := usuario.NewHandler(dbtx, tokenBuilder, tokenDuration)
 
 	//RUTAS {ENDPOINTS} DEL API
@@ -41,7 +52,7 @@ func NewServer(dbtx *dto.DbTransaction, tokenDuration time.Duration) (*Server, e
 	tour.RegisterRoutes(api.Group("/tour"), dbtx, tokenBuilder)
 	usuario.RegisterRoutes(api.Group("/usuario"), dbtx, tokenBuilder, tokenDuration)
 	transfer.RegisterRoutes(api.Group("/transfer"), dbtx, tokenBuilder)
-	reserva.RegisterRoutes(api.Group("/reserva"), dbtx, tokenBuilder )
+	reserva.RegisterRoutes(api.Group("/reserva"), dbtx, tokenBuilder)
 	factura.RegisterRoutes(api.Group("/factura"), dbtx, tokenBuilder)
 
 	///FIN RUTAS///

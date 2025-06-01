@@ -3,35 +3,27 @@ package main
 import (
 	"ProyectoProgramadoI/api"
 	"ProyectoProgramadoI/dto"
+	"ProyectoProgramadoI/utils"
 	"database/sql"
 	"log"
-	"os"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
-)
-
-const (
-	dbDriver  = "mysql"
-	dbSource  = "root:@tcp(127.0.0.1:3306)/reservas?charset=utf8mb4&parseTime=True&loc=Local"
-	serverURL = "127.0.0.1:8080"
 )
 
 func main() {
 
-	err := godotenv.Load("app.env")
+	config, err := utils.LoadConfig(".")
 	if err != nil {
-		log.Fatal("No se pudo cargar el archivo .env")
+		log.Fatal("No se pudo cargar el archivo de configuración:", err)
 	}
 
-	tokenDurationStr := os.Getenv("TOKEN_DURATION")
-	tokenDuration, err := time.ParseDuration(tokenDurationStr)
+	tokenDuration, err := time.ParseDuration(config.TokenDuration)
 	if err != nil {
 		log.Fatal("Duración del token inválida:", err)
 	}
 
-	conn, err := sql.Open(dbDriver, dbSource)
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal("No se puede establecer la conexión", err)
 	}
@@ -40,7 +32,7 @@ func main() {
 	if err != nil {
 		log.Fatal("No se puede iniciar el servidor", err)
 	}
-	err = server.Start(serverURL)
+	err = server.Start(config.ServerURL)
 	if err != nil {
 		log.Fatal("No se puede iniciar el servidor", err)
 	}
