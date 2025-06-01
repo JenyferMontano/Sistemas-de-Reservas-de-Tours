@@ -25,8 +25,5 @@ export class AppComponent {
       this.identity=usuarioService.getIdentity();
     },500)
   }
-
-
-
 }
 
