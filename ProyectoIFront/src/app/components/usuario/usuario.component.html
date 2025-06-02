@@ -1,0 +1,31 @@
+<h2>Crear Usuario</h2>
+
+<form (ngSubmit)="onSubmit()" #formUsuario="ngForm">
+  <label>Nombre de usuario:</label>
+  <input type="text" name="userName" [(ngModel)]="usuario.userName" required />
+
+  <label>Contraseña:</label>
+  <input type="password" name="password" [(ngModel)]="usuario.password" required />
+
+  <label>Rol:</label>
+  <select name="role" [(ngModel)]="usuario.rol">
+    <option value="admin">admin</option>
+    <option value="cliente">cliente</option>
+  </select>
+
+  <label>ID Persona:</label>
+  <input type="number" name="idPersona" [(ngModel)]="usuario.idPersona" required />
+
+  <button type="submit">Crear Usuario</button>
+</form>
+
+<div *ngIf="status === 'success'" class="success-msg">
+  Usuario creado correctamente.
+</div>
+<div *ngIf="status === 'error'" class="error-msg">
+  Error al crear el usuario.
+</div>
+<div *ngIf="status === 'unauthorized'" class="error-msg">
+  Debes iniciar sesión como administrador para crear usuarios.
+</div>
+

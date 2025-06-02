@@ -42,7 +42,7 @@ import { LoginR } from '../models/loginR';
 
     */
      login(loginData: LoginR): Observable<any> {
-    let userJSON=JSON.stringify(loginData)
+        let userJSON=JSON.stringify(loginData)
         let headers =new HttpHeaders().set('Content-Type','application/json')
         let options={
             headers
@@ -64,4 +64,21 @@ import { LoginR } from '../models/loginR';
   getToken(){
         return sessionStorage.getItem('token')
     }
+  
+    //POST
+    //crearUsuario(usuario: Usuario): Observable<any> {return this._http.post(this.url + 'usuarios', usuario);}
+    
+crearUsuario(usuario: Usuario, token: any): Observable<any> {
+  const accessToken = 'bearer ' + token;
+  const headers = new HttpHeaders()
+    .set('Content-Type', 'application/json')
+    .set('Authorization', accessToken);
+
+  const options = { headers };
+  const data = JSON.stringify(usuario);
+
+  return this._http.post(this.url + 'usuario', data, options);
+}
+
+
 }
